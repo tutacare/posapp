@@ -21,7 +21,8 @@
                         <div class="md:col-span-2">
                             <h3 class="text-xl font-semibold mb-4 text-gray-700">📦 Produk</h3>
                             <div class="mb-4 relative">
-                                <input type="text" x-model="search" placeholder="Cari produk (nama/barcode)..."
+                                <input type="text" x-model.debounce.500ms="search"
+                                    placeholder="Cari produk (nama/barcode)..."
                                     class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
                                 <button x-show="search" @click="search = ''"
                                     class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
@@ -35,31 +36,47 @@
                             </div>
 
                             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                                    <template x-for="product in filteredProducts" :key="product.id">
-                                        <div class="border rounded-xl p-4 shadow-md transition hover:shadow-lg bg-white flex flex-col h-full">
-                                            <h4 class="text-lg font-bold text-gray-800 mb-1" x-text="product.name"></h4>
-                                            <p class="text-xs text-gray-500 mb-1" x-show="product.barcode">SKU: <span x-text="product.barcode"></span></p>
-                                            <p class="text-sm text-gray-500 line-clamp-2 flex-grow" x-text="product.description"></p>
-                                            <p class="mt-2 font-semibold text-indigo-600" x-text="formatCurrency(product.price)"></p>
-                                            <p class="text-xs" :class="product.stock < 5 ? 'text-red-500' : 'text-gray-500'">Stok: <span x-text="product.stock"></span></p>
-                                            <button @click="addToCart(product)" :disabled="product.stock == 0"
-                                                class="mt-3 w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded-lg text-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-                                                Tambah
-                                            </button>
-                                        </div>
-                                    </template>
-                                    <div x-show="isLoadingMore" class="col-span-full text-center py-4">
-                                        <svg class="animate-spin mx-auto h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
-                                        Memuat lebih banyak produk...
+                                <template x-for="product in products" :key="product.id">
+                                    <div
+                                        class="border rounded-xl p-4 shadow-md transition hover:shadow-lg bg-white flex flex-col h-full">
+                                        <h4 class="text-lg font-bold text-gray-800 mb-1" x-text="product.name"></h4>
+                                        <p class="text-xs text-gray-500 mb-1" x-show="product.barcode">SKU: <span
+                                                x-text="product.barcode"></span></p>
+                                        <p class="text-sm text-gray-500 line-clamp-2 flex-grow"
+                                            x-text="product.description"></p>
+                                        <p class="mt-2 font-semibold text-indigo-600"
+                                            x-text="formatCurrency(product.price)"></p>
+                                        <p class="text-xs"
+                                            :class="product.stock < 5 ? 'text-red-500' : 'text-gray-500'">Stok: <span
+                                                x-text="product.stock"></span></p>
+                                        <button @click="addToCart(product)" :disabled="product.stock == 0"
+                                            class="mt-3 w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-1.5 px-3 rounded-lg text-sm transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Tambah
+                                        </button>
                                     </div>
-                                    <div x-show="!hasMoreProducts && products.length > 0" class="col-span-full text-center py-4 text-gray-500">
-                                        Semua produk telah dimuat.
-                                    </div>
+                                </template>
+                                <div x-show="isLoadingMore" class="col-span-full text-center py-4">
+                                    <svg class="animate-spin mx-auto h-8 w-8 text-indigo-500"
+                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                    Memuat lebih banyak produk...
                                 </div>
+                                <div x-show="!hasMoreProducts && products.length > 0"
+                                    class="col-span-full text-center py-4 text-gray-500">
+                                    Semua produk telah dimuat.
+                                </div>
+                            </div>
                         </div>
 
                         <div class="md:col-span-1">
@@ -136,54 +153,57 @@
             function pos() {
                 return {
                     products: @json($products->items()),
-                currentPage: {{ $products->currentPage() }},
-                hasMoreProducts: {{ $products->hasMorePages() ? 'true' : 'false' }},
-                isLoadingMore: false,
-                search: '',
-                cart: [],
-                isProcessing: false,
-                init() {
-                    this.$watch('search', (value) => {
-                        this.currentPage = 0;
-                        this.products = [];
-                        this.hasMoreProducts = true;
-                        this.loadMoreProducts();
-                    });
+                    currentPage: {{ $products->currentPage() }},
+                    hasMoreProducts: {{ $products->hasMorePages() ? 'true' : 'false' }},
+                    isLoadingMore: false,
+                    search: '',
+                    cart: [],
+                    isProcessing: false,
+                    init() {
+                        this.$watch('search', (newValue, oldValue) => {
+                            if (newValue !== oldValue) {
+                                this.products = [];
+                                this.currentPage = 1;
+                                this.hasMoreProducts = true;
+                                this.loadMoreProducts();
+                            }
+                        });
 
-                    window.addEventListener('scroll', () => {
-                        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && this.hasMoreProducts && !this.isLoadingMore) {
-                            this.loadMoreProducts();
+                        // The rest of your init function...
+                        window.addEventListener('scroll', () => {
+                            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && this.hasMoreProducts && !this.isLoadingMore) {
+                                this.loadMoreProducts();
+                            }
+                        });
+                    },
+                    get itemCount() {
+                        return this.cart.reduce((sum, item) => sum + item.quantity, 0);
+                    },
+                    get totalPrice() {
+                        return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    },
+                    async loadMoreProducts() {
+                        if (!this.hasMoreProducts || this.isLoadingMore) return;
+
+                        this.isLoadingMore = true;
+                        try {
+                            const response = await fetch(`{{ route('pos.products') }}?page=${this.currentPage}&search=${this.search}`);
+                            const data = await response.json();
+
+                            if (data.data.length > 0) {
+                                this.products.push(...data.data);
+                                this.currentPage++;
+                                this.hasMoreProducts = data.next_page_url !== null;
+                            } else {
+                                this.hasMoreProducts = false;
+                            }
+                        } catch (error) {
+                            console.error('Error loading more products:', error);
+                            this.hasMoreProducts = false; // Stop trying on error
+                        } finally {
+                            this.isLoadingMore = false;
                         }
-                    });
-                },
-                get filteredProducts() {
-                    // Products are already filtered by search in loadMoreProducts, 
-                    // this getter just returns the current loaded products.
-                    return this.products;
-                },
-                get itemCount() {
-                    return this.cart.reduce((sum, item) => sum + item.quantity, 0);
-                },
-                get totalPrice() {
-                    return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                },
-                async loadMoreProducts() {
-                    if (!this.hasMoreProducts || this.isLoadingMore) return;
-
-                    this.isLoadingMore = true;
-                    try {
-                        const response = await fetch(`{{ route('pos.products') }}?page=${this.currentPage + 1}&search=${this.search}`);
-                        const data = await response.json();
-                        
-                        this.products = [...this.products, ...data.data];
-                        this.currentPage = data.current_page;
-                        this.hasMoreProducts = data.next_page_url !== null;
-                    } catch (error) {
-                        console.error('Error loading more products:', error);
-                    } finally {
-                        this.isLoadingMore = false;
-                    }
-                },
+                    },
                     addToCart(product) {
                         const existingItem = this.cart.find(item => item.id === product.id);
                         if (existingItem) {
@@ -231,40 +251,42 @@
 
                         console.log('Sending cart data:', cartData);
 
-                        fetch('{{ route("pos.checkout") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                                    'content'),
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
-                            body: JSON.stringify({ cart: cartData })
-                        })
-                        .then(response => {
-                            console.log('Raw response:', response);
-                            if (!response.ok) {
-                                return response.json().then(errorData => {
-                                    throw new Error(errorData.message || 'Server error');
-                                });
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log('Response data:', data);
-                            if (data.redirect_url) {
-                                window.location.href = data.redirect_url;
-                            } else {
-                                alert(data.message || 'Terjadi kesalahan.');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error during checkout:', error);
-                            alert('Checkout gagal: ' + error.message + '. Silakan coba lagi.');
-                        })
-                        .finally(() => {
-                            this.isProcessing = false;
-                        });
+                        fetch('{{ route('pos.checkout') }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                        'content'),
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({
+                                    cart: cartData
+                                })
+                            })
+                            .then(response => {
+                                console.log('Raw response:', response);
+                                if (!response.ok) {
+                                    return response.json().then(errorData => {
+                                        throw new Error(errorData.message || 'Server error');
+                                    });
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                console.log('Response data:', data);
+                                if (data.redirect_url) {
+                                    window.location.href = data.redirect_url;
+                                } else {
+                                    alert(data.message || 'Terjadi kesalahan.');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error during checkout:', error);
+                                alert('Checkout gagal: ' + error.message + '. Silakan coba lagi.');
+                            })
+                            .finally(() => {
+                                this.isProcessing = false;
+                            });
                     },
                     formatCurrency(amount) {
                         return new Intl.NumberFormat('id-ID', {

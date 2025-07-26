@@ -19,17 +19,17 @@ class PosController extends Controller
 
     public function getProducts(Request $request)
     {
-        $query = Product::where('stock', '>', 0)->orderBy('name');
+        $query = Product::query()->where('stock', '>', 0)->orderBy('name');
 
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
+        if ($request->filled('search')) {
+            $search = trim($request->search);
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'ILIKE', '%' . $search . '%')
-                    ->orWhere('barcode', 'ILIKE', '%' . $search . '%');
+                $q->where('name', 'ILIKE', "%{$search}%")
+                  ->orWhere('barcode', 'ILIKE', "%{$search}%");
             });
         }
 
-        $products = $query->paginate(10, ['*'], 'page', $request->get('page', 1));
+        $products = $query->paginate(10);
 
         return response()->json($products);
     }
