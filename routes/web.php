@@ -1,11 +1,11 @@
 <?php
 
-use App\Livewire\PosPage;
-use App\Livewire\CategoryManagement;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PosController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Livewire\CategoryManagement;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,8 +26,11 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::middleware(['role:Cashier|Admin'])->group(function () {
-        Route::get('/pos', PosPage::class)->name('pos.index');
+        Route::get('/pos', [PosController::class, 'index'])->name('pos.index');
+        Route::get('/pos/products', [PosController::class, 'getProducts'])->name('pos.products');
+        Route::post('/pos/checkout', [PosController::class, 'checkout'])->name('pos.checkout');
         Route::get('/orders/completed', [OrderController::class, 'completed'])->name('orders.completed');
+        Route::get('/order/completed/{order}', [OrderController::class, 'showCompleted'])->name('order.completed');
     });
 });
 

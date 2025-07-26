@@ -28,4 +28,9 @@ class OrderController extends Controller
 
         return view('orders.completed', compact('orders'));
     }
+
+    public function showCompleted(Order $order)
+    {
+        return view('orders.completed-show', compact('order'));
+    }
 }

@@ -21,7 +21,7 @@
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100 flex">
         <!-- Sidebar -->
-        <aside class="w-64 bg-gradient-to-br from-gray-800 to-gray-900 text-white flex-shrink-0 shadow-lg">
+        <aside class="w-64 bg-gradient-to-br from-gray-800 to-gray-900 text-white flex-shrink-0 shadow-lg print:hidden">
             <div class="p-6 border-b border-gray-700">
                 <h1 class="text-3xl font-extrabold text-indigo-400">POS App</h1>
             </div>
