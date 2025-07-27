@@ -1,19 +1,21 @@
 <?php
 
+use App\Livewire\CategoryManagement;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
-use App\Livewire\CategoryManagement;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/sales-data', [DashboardController::class, 'salesData'])->name('dashboard.sales-data');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -24,6 +26,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/category-management', CategoryManagement::class)->name('category.management');
         Route::resource('products', ProductController::class);
         Route::get('/reports/profit-loss', [App\Http\Controllers\ReportController::class, 'profitLoss'])->name('reports.profit-loss');
+        // Route::get('/dashboard/sales-data', [App\Http\Controllers\DashboardController::class, 'salesData'])->name('dashboard.sales-data');
     });
 
     Route::middleware(['role:Cashier|Admin'])->group(function () {
