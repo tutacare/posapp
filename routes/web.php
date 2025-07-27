@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware(['role:Admin'])->group(function () {
         Route::get('/category-management', CategoryManagement::class)->name('category.management');
         Route::resource('products', ProductController::class);
+        Route::get('/reports/profit-loss', [App\Http\Controllers\ReportController::class, 'profitLoss'])->name('reports.profit-loss');
     });
 
     Route::middleware(['role:Cashier|Admin'])->group(function () {

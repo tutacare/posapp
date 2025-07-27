@@ -1,6 +1,4 @@
-@extends('layouts.app')
-
-@section('content')
+<x-app-layout>
     <div class="max-w-2xl mx-auto py-10 px-4">
         <h2 class="text-xl font-bold mb-4">{{ isset($product) ? 'Edit Product' : 'Add New Product' }}</h2>
 
@@ -19,6 +17,18 @@
             <div>
                 <label class="block text-sm font-medium">Description</label>
                 <textarea name="description" class="w-full border rounded p-2">{{ old('description', $product->description ?? '') }}</textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">Barcode</label>
+                <input name="barcode" value="{{ old('barcode', $product->barcode ?? '') }}"
+                    class="w-full border rounded p-2">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium">Cost Price</label>
+                <input name="cost_price" type="number" step="0.01"
+                    value="{{ old('cost_price', $product->cost_price ?? '') }}" class="w-full border rounded p-2">
             </div>
 
             <div>
@@ -51,5 +61,6 @@
                 </button>
             </div>
         </form>
+
     </div>
-@endsection
+</x-app-layout>
